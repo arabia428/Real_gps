@@ -1,5 +1,12 @@
-const map = L.map('map', { zoomControl: false }).setView([40.4168, -3.7038], 6);
-L.control.zoom({ position: 'bottomleft' }).addTo(map);
+// ==== app.js ====
+const map = L.map('map', {
+  center: [40.4168, -3.7038],
+  zoom: 6,
+  zoomControl: false
+});
+L.control.zoom({
+  position: 'bottomleft'
+}).addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
@@ -7,18 +14,18 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 let rutaLayer;
 
-// Detectar ubicación y autocompletar origen
 navigator.geolocation.getCurrentPosition(async pos => {
   const lat = pos.coords.latitude;
   const lon = pos.coords.longitude;
+  const marker = L.marker([lat, lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
+  map.setView([lat, lon], 13);
+  const origenInput = document.getElementById('origen');
 
-  L.marker([lat, lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
-  map.setView([lat, lon], 10);
-
-  // Obtener dirección
-  const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+  // Geocodificar para mostrar calle + número + ciudad
+  const geocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+  const response = await fetch(geocodeUrl);
   const data = await response.json();
-  document.getElementById("origen").value = data.display_name;
+  origenInput.value = data.display_name;
 });
 
 async function geocode(texto) {
@@ -28,34 +35,40 @@ async function geocode(texto) {
   return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
 }
 
-function calcularTiempo(distanciaKm, velocidadKmh) {
-  const horas = distanciaKm / velocidadKmh;
+function formatTiempo(horas) {
   const h = Math.floor(horas);
   const m = Math.round((horas - h) * 60);
   return `${h} h ${m} min`;
 }
 
-document.getElementById('btnCalcular').addEventListener('click', async () => {
-  const origenTexto = document.getElementById('origen').value;
-  const destinoTexto = document.getElementById('destino').value;
-  const velocidad = parseFloat(document.getElementById('velocidad').value);
+document.getElementById('btnCalcular').addEventListener('click', async e => {
+  e.preventDefault();
+  const origen = document.getElementById('origen').value;
+  const destino = document.getElementById('destino').value;
+  const velocidad = parseFloat(document.getElementById('velocidad').value) || 90;
+  const altura = parseFloat(document.getElementById('altura')?.value);
+  const ancho = parseFloat(document.getElementById('ancho')?.value);
+  const largo = parseFloat(document.getElementById('largo')?.value);
+  const peso = parseFloat(document.getElementById('peso')?.value);
 
-  if (!origenTexto || !destinoTexto || isNaN(velocidad)) return;
+  if (!origen || !destino) return alert("Falta origen o destino");
 
-  const [lat1, lon1] = await geocode(origenTexto);
-  const [lat2, lon2] = await geocode(destinoTexto);
+  const coordsInicio = await geocode(origen);
+  const coordsFin = await geocode(destino);
 
+  const rutaUrl = `https://router.project-osrm.org/route/v1/driving/${coordsInicio[1]},${coordsInicio[0]};${coordsFin[1]},${coordsFin[0]}?overview=full&geometries=geojson`;
+  const rutaResp = await fetch(rutaUrl);
+  const ruta = await rutaResp.json();
+
+  if (!ruta.routes.length) return alert("No se encontró una ruta.");
+
+  const line = L.geoJSON(ruta.routes[0].geometry, { color: 'blue' });
   if (rutaLayer) map.removeLayer(rutaLayer);
+  rutaLayer = line.addTo(map);
+  map.fitBounds(line.getBounds());
 
-  const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=full&geometries=geojson`);
-  const data = await response.json();
+  const distancia = ruta.routes[0].distance / 1000;
+  const tiempo = distancia / velocidad;
 
-  const coords = data.routes[0].geometry.coordinates.map(p => [p[1], p[0]]);
-  const distanciaKm = data.routes[0].distance / 1000;
-
-  rutaLayer = L.polyline(coords, { color: 'blue' }).addTo(map);
-  map.fitBounds(rutaLayer.getBounds());
-
-  const tiempo = calcularTiempo(distanciaKm, velocidad);
-  document.getElementById("infoRuta").innerHTML = `Distancia: ${distanciaKm.toFixed(1)} km | Tiempo estimado: ${tiempo}`;
+  document.getElementById('infoRuta').innerText = `Distancia: ${distancia.toFixed(1)} km\nTiempo estimado: ${formatTiempo(tiempo)}`;
 });
