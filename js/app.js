@@ -46,10 +46,10 @@ async function calcularRuta() {
   const destinoTexto = document.getElementById('destino').value;
   const velocidad = parseInt(document.getElementById('velocidad').value);
 
-  const altura = parseFloat(document.getElementById('altura')?.value) || undefined;
-  const anchura = parseFloat(document.getElementById('anchura')?.value) || undefined;
-  const largo = parseFloat(document.getElementById('largo')?.value) || undefined;
-  const peso = parseFloat(document.getElementById('peso')?.value) || undefined;
+  const altura = parseFloat(document.getElementById('altura')?.value) || null;
+  const anchura = parseFloat(document.getElementById('anchura')?.value) || null;
+  const largo = parseFloat(document.getElementById('largo')?.value) || null;
+  const peso = parseFloat(document.getElementById('peso')?.value) || null;
 
   const coordsInicio = await geocode(origenTexto);
   const coordsFin = await geocode(destinoTexto);
@@ -66,7 +66,6 @@ async function calcularRuta() {
         height: altura,
         width: anchura,
         length: largo,
-        avoid_features: ["ferries", "tollways", "fords"],
       }
     } : {})
   };
@@ -79,12 +78,6 @@ async function calcularRuta() {
     },
     body: JSON.stringify(body)
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    document.getElementById('infoRuta').innerHTML = `Error al calcular ruta: ${errorText}`;
-    return;
-  }
 
   const ruta = await response.json();
 
