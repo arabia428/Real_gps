@@ -1,21 +1,28 @@
-body {
+html, body {
+  height: 100%;
   margin: 0;
   font-family: Arial, sans-serif;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
 
 #formulario {
   position: absolute;
   top: 20px;
   left: 20px;
-  background: rgba(10, 40, 80, 0.6); /* 60% de transparencia */
+  background: rgba(10, 40, 80, 0.6); /* Transparente azul */
   padding: 15px;
   border-radius: 15px;
   z-index: 1000;
   color: white;
-  width: 250px;
+  width: 260px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
 
@@ -54,8 +61,4 @@ input {
   border-radius: 10px;
   display: none;
   text-align: center;
-}
-#map {
-  flex: 1;
-  height: 100%;
 }
