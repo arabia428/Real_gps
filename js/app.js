@@ -1,9 +1,11 @@
-// ==== app.js ====
+// js/app.js
+
 const map = L.map('map', {
   center: [40.4168, -3.7038],
   zoom: 6,
-  zoomControl: false
+  zoomControl: false,
 });
+
 L.control.zoom({
   position: 'bottomleft'
 }).addTo(map);
@@ -17,15 +19,12 @@ let rutaLayer;
 navigator.geolocation.getCurrentPosition(async pos => {
   const lat = pos.coords.latitude;
   const lon = pos.coords.longitude;
-  const marker = L.marker([lat, lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
-  map.setView([lat, lon], 13);
-  const origenInput = document.getElementById('origen');
-
-  // Geocodificar para mostrar calle + número + ciudad
-  const geocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-  const response = await fetch(geocodeUrl);
+  const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
   const data = await response.json();
-  origenInput.value = data.display_name;
+  const direccion = data.display_name;
+  document.getElementById('origen').value = direccion;
+  L.marker([lat, lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
+  map.setView([lat, lon], 10);
 });
 
 async function geocode(texto) {
@@ -35,40 +34,66 @@ async function geocode(texto) {
   return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
 }
 
-function formatTiempo(horas) {
-  const h = Math.floor(horas);
-  const m = Math.round((horas - h) * 60);
-  return `${h} h ${m} min`;
+function calcularTiempo(distanciaKm, velocidadKmH) {
+  const tiempoHoras = distanciaKm / velocidadKmH;
+  const horas = Math.floor(tiempoHoras);
+  const minutos = Math.round((tiempoHoras - horas) * 60);
+  return `${horas} h ${minutos} min`;
 }
 
-document.getElementById('btnCalcular').addEventListener('click', async e => {
-  e.preventDefault();
-  const origen = document.getElementById('origen').value;
-  const destino = document.getElementById('destino').value;
-  const velocidad = parseFloat(document.getElementById('velocidad').value) || 90;
-  const altura = parseFloat(document.getElementById('altura')?.value);
-  const ancho = parseFloat(document.getElementById('ancho')?.value);
-  const largo = parseFloat(document.getElementById('largo')?.value);
-  const peso = parseFloat(document.getElementById('peso')?.value);
+async function calcularRuta() {
+  const origenTexto = document.getElementById('origen').value;
+  const destinoTexto = document.getElementById('destino').value;
+  const velocidad = parseInt(document.getElementById('velocidad').value);
 
-  if (!origen || !destino) return alert("Falta origen o destino");
+  const altura = parseFloat(document.getElementById('altura')?.value) || null;
+  const anchura = parseFloat(document.getElementById('anchura')?.value) || null;
+  const largo = parseFloat(document.getElementById('largo')?.value) || null;
+  const peso = parseFloat(document.getElementById('peso')?.value) || null;
 
-  const coordsInicio = await geocode(origen);
-  const coordsFin = await geocode(destino);
+  const coordsInicio = await geocode(origenTexto);
+  const coordsFin = await geocode(destinoTexto);
 
-  const rutaUrl = `https://router.project-osrm.org/route/v1/driving/${coordsInicio[1]},${coordsInicio[0]};${coordsFin[1]},${coordsFin[0]}?overview=full&geometries=geojson`;
-  const rutaResp = await fetch(rutaUrl);
-  const ruta = await rutaResp.json();
+  const body = {
+    coordinates: [coordsInicio.reverse(), coordsFin.reverse()],
+    profile: "driving-car",
+    format: "geojson",
+    ...(altura || anchura || largo || peso ? {
+      extra_info: ["weight", "height", "width", "length"],
+      options: {
+        vehicle_type: "hgv",
+        weight: peso,
+        height: altura,
+        width: anchura,
+        length: largo,
+      }
+    } : {})
+  };
 
-  if (!ruta.routes.length) return alert("No se encontró una ruta.");
+  const response = await fetch("https://api.openrouteservice.org/v2/directions/driving-car/geojson", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "5b3ce3597851110001cf6248"
+    },
+    body: JSON.stringify(body)
+  });
 
-  const line = L.geoJSON(ruta.routes[0].geometry, { color: 'blue' });
+  const ruta = await response.json();
+
   if (rutaLayer) map.removeLayer(rutaLayer);
-  rutaLayer = line.addTo(map);
-  map.fitBounds(line.getBounds());
+  rutaLayer = L.geoJSON(ruta, {
+    style: { color: "blue", weight: 5 }
+  }).addTo(map);
+  map.fitBounds(rutaLayer.getBounds());
 
-  const distancia = ruta.routes[0].distance / 1000;
-  const tiempo = distancia / velocidad;
+  const distancia = ruta.features[0].properties.summary.distance / 1000;
+  const estimado = calcularTiempo(distancia, velocidad);
 
-  document.getElementById('infoRuta').innerText = `Distancia: ${distancia.toFixed(1)} km\nTiempo estimado: ${formatTiempo(tiempo)}`;
+  document.getElementById('infoRuta').innerHTML = `Distancia: ${distancia.toFixed(2)} km<br>Tiempo estimado: ${estimado}`;
+}
+
+document.getElementById('btnCalcular').addEventListener('click', e => {
+  e.preventDefault();
+  calcularRuta();
 });
