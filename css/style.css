@@ -10,44 +10,54 @@ body {
   position: absolute;
   top: 10px;
   left: 10px;
-  z-index: 1000;
-  background: rgba(0, 90, 255, 0.6); /* azul claro y transparente */
-  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.6); /* Transparente */
+  padding: 15px;
   border-radius: 12px;
-  color: white;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
 }
 
-#formulario label,
-#formulario input,
-#formulario button {
-  display: block;
-  margin-bottom: 5px;
-  width: 100%;
-}
-
-input {
-  padding: 5px;
-  border-radius: 5px;
-  border: none;
+label {
   font-size: 14px;
+  font-weight: bold;
+}
+
+input, select {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 button {
-  padding: 8px;
-  border: none;
-  background: #0044cc;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #0055cc;
   color: white;
-  font-weight: bold;
-  border-radius: 5px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #003d99;
 }
 
 #infoRuta {
-  margin-top: 8px;
+  margin-top: 10px;
+  font-weight: bold;
   font-size: 14px;
+  color: #000;
 }
 
 #map {
   flex: 1;
-  height: 100vh;
+  height: 100%;
+  z-index: 1;
 }
