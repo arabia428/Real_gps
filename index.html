@@ -1,43 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GPS Camionero</title>
-  <meta charset="utf-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-  <!-- Tu CSS corregido -->
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Leaflet CSS (cdn confiable) -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
-
 <body>
-  <!-- Ventana flotante -->
   <div id="formulario">
-    <label>Origen:
-      <input type="text" id="origen" placeholder="Ej: Madrid, España" />
-    </label>
-    <label>Destino:
-      <input type="text" id="destino" placeholder="Ej: Valencia, España" />
-    </label>
-    <label>Velocidad Máxima (km/h):
-      <input type="number" id="velocidad" value="90" />
-    </label>
-
+    <label>Destino: <input type="text" id="destino" placeholder="Ej: Valencia, España"></label>
+    <label>Velocidad máxima (km/h): <input type="number" id="velocidad" value="90"></label>
     <button id="btnCalcular">Calcular Ruta</button>
     <div id="infoRuta"></div>
   </div>
-
-  <!-- Mapa -->
   <div id="map"></div>
 
-  <!-- Leaflet JS (cdn confiable) -->
-  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Tu lógica corregida -->
-  <script src="app.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
