@@ -31,6 +31,7 @@ input {
   border: none;
   border-radius: 8px;
   box-sizing: border-box;
+  color: #333; /* Color del texto en inputs */
 }
 
 #btnCalcular {
@@ -43,6 +44,11 @@ input {
   margin-top: 6px;
   cursor: pointer;
   width: 100%;
+  transition: background-color 0.3s;
+}
+
+#btnCalcular:hover {
+  background-color: #0056b3;
 }
 
 #infoRuta {
@@ -60,4 +66,15 @@ input {
 #map {
   flex: 1;
   height: 100%;
+  min-height: 400px; /* Altura mínima para asegurar que se vea el mapa */
+  background-color: #f0f0f0; /* Color de fondo temporal mientras carga */
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+  #formulario {
+    width: calc(100% - 40px);
+    left: 20px;
+    right: 20px;
+  }
 }
