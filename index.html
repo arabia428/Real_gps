@@ -9,11 +9,19 @@
 </head>
 <body>
   <div id="formulario">
-    <label>Destino: <input type="text" id="destino" placeholder="Ej: Valencia, España"></label>
-    <label>Velocidad máxima (km/h): <input type="number" id="velocidad" value="90"></label>
+    <label>Destino:
+      <input type="text" id="destino" placeholder="Ej: Valencia, España">
+    </label>
+    <label>Velocidad máxima (km/h):
+      <input type="number" id="velocidad" value="90">
+    </label>
+    <label>Tamaño:
+      <input type="text" id="tamano" placeholder="Ej: 2 ejes, grande">
+    </label>
     <button id="btnCalcular">Calcular Ruta</button>
     <div id="infoRuta"></div>
   </div>
+
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
