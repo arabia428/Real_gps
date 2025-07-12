@@ -6,9 +6,7 @@ const map = L.map('map', {
   zoomControl: false,
 });
 
-L.control.zoom({
-  position: 'bottomleft'
-}).addTo(map);
+L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
@@ -16,6 +14,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 let rutaLayer;
 
+// Localiza al usuario y actualiza campo origen
 navigator.geolocation.getCurrentPosition(async pos => {
   const lat = pos.coords.latitude;
   const lon = pos.coords.longitude;
@@ -57,27 +56,32 @@ async function calcularRuta() {
   const body = {
     coordinates: [coordsInicio.reverse(), coordsFin.reverse()],
     profile: "driving-hgv",
-    format: "geojson",
-    ...(altura || anchura || largo || peso ? {
-      extra_info: ["weight", "height", "width", "length"],
-      options: {
-        vehicle_type: "hgv",
-        weight: peso,
-        height: altura,
-        width: anchura,
-        length: largo,
-      }
-    } : {})
+    format: "geojson"
   };
+
+  if (altura || anchura || largo || peso) {
+    body.extra_info = ["weight", "height", "width", "length"];
+    body.options = { vehicle_type: "hgv" };
+    if (peso) body.options.weight = peso;
+    if (altura) body.options.height = altura;
+    if (anchura) body.options.width = anchura;
+    if (largo) body.options.length = largo;
+  }
 
   const response = await fetch("https://api.openrouteservice.org/v2/directions/driving-hgv/geojson", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "5b3ce3597851110001cf6248"
+      "Authorization": "5b3ce3597851110001cf6248"  // API Key pública de demo
     },
     body: JSON.stringify(body)
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    alert("Error al calcular ruta:\n" + errorText);
+    return;
+  }
 
   const ruta = await response.json();
 
@@ -90,7 +94,10 @@ async function calcularRuta() {
   const distancia = ruta.features[0].properties.summary.distance / 1000;
   const estimado = calcularTiempo(distancia, velocidad);
 
-  document.getElementById('infoRuta').innerHTML = `Distancia: ${distancia.toFixed(2)} km<br>Tiempo estimado: ${estimado}`;
+  document.getElementById('infoRuta').innerHTML = `
+    <strong>Distancia:</strong> ${distancia.toFixed(2)} km<br>
+    <strong>Tiempo estimado:</strong> ${estimado}
+  `;
 }
 
 document.getElementById('btnCalcular').addEventListener('click', e => {
