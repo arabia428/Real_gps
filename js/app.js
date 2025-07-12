@@ -1,5 +1,9 @@
 const apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjI4YjE4ZmFmNjZiNjQ1YmViODg4ZjkzYzE2NTNmNDcxIiwiaCI6Im11cm11cjY0In0=";
 
+let userLocation = null;
+let rutaLayer;
+
+// Inicializar mapa
 const map = L.map('map', {
   center: [40.4168, -3.7038],
   zoom: 6,
@@ -9,16 +13,26 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
-let rutaLayer;
-
+// Obtener ubicación del usuario y usarla como origen
 navigator.geolocation.getCurrentPosition(pos => {
   const lat = pos.coords.latitude;
   const lon = pos.coords.longitude;
-  L.marker([lat, lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
-  map.setView([lat, lon], 10);
+  userLocation = [lat, lon];
+  L.marker(userLocation).addTo(map).bindPopup("Tu ubicación").openPopup();
+  map.setView(userLocation, 10);
+
+  // Llenar el campo de origen automáticamente con coordenadas
+  document.getElementById('origen').value = `${lat}, ${lon}`;
+}, () => {
+  alert("No se pudo obtener tu ubicación actual.");
 });
 
 async function geocode(texto) {
+  // Si el texto ya es una coordenada (por ejemplo, "40.1, -3.7"), no geocodificar
+  if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(texto.trim())) {
+    const [lat, lon] = texto.split(',').map(Number);
+    return [lat, lon];
+  }
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}`;
   const response = await fetch(url);
   const data = await response.json();
@@ -31,6 +45,11 @@ async function calcularRuta() {
   const peso = parseInt(document.getElementById('peso').value);
   const altura = parseFloat(document.getElementById('altura').value);
   const velocidad = parseInt(document.getElementById('velocidad').value);
+
+  if (!destinoTexto) {
+    alert("Por favor, introduce un destino.");
+    return;
+  }
 
   const coordsInicio = await geocode(origenTexto);
   const coordsFin = await geocode(destinoTexto);
