@@ -9,15 +9,55 @@
 </head>
 <body>
   <div id="formulario">
-    <label>Destino:
-      <input type="text" id="destino" placeholder="Ej: Valencia, España">
+    <label>Origen: <input type="text" id="origen" placeholder="Ubicación actual predeterminada"></label>
+    <label>Destino: <input type="text" id="destino" placeholder="Ej: Valencia, España"></label>
+    <label>Velocidad máxima (km/h): <input type="number" id="velocidad" value="90"></label>
+
+    <label>Altura (m):
+      <select id="altura">
+        <option value="">Opcional</option>
+        <option value="2">2 m</option>
+        <option value="3">3 m</option>
+        <option value="4">4 m</option>
+        <option value="5">5 m</option>
+        <option value="6">6 m</option>
+        <option value="7">7 m</option>
+      </select>
     </label>
-    <label>Velocidad máxima (km/h):
-      <input type="number" id="velocidad" value="90">
+
+    <label>Anchura (m):
+      <select id="anchura">
+        <option value="">Opcional</option>
+        <option value="2">2 m</option>
+        <option value="2.5">2.5 m</option>
+        <option value="3">3 m</option>
+        <option value="3.5">3.5 m</option>
+        <option value="4">4 m</option>
+      </select>
     </label>
-    <label>Tamaño:
-      <input type="text" id="tamano" placeholder="Ej: 2 ejes, grande">
+
+    <label>Largo (m):
+      <select id="largo">
+        <option value="">Opcional</option>
+        <option value="5">5 m</option>
+        <option value="10">10 m</option>
+        <option value="15">15 m</option>
+        <option value="20">20 m</option>
+      </select>
     </label>
+
+    <label>Peso (kg):
+      <select id="peso">
+        <option value="">Opcional</option>
+        <option value="10000">10.000 kg</option>
+        <option value="20000">20.000 kg</option>
+        <option value="30000">30.000 kg</option>
+        <option value="40000">40.000 kg</option>
+        <option value="50000">50.000 kg</option>
+        <option value="60000">60.000 kg</option>
+      </select>
+    </label>
+
     <button id="btnCalcular">Calcular Ruta</button>
     <div id="infoRuta"></div>
   </div>
