@@ -4,28 +4,21 @@
   <title>GPS Camionero</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  
-  <!-- CSS personalizado -->
-  <link rel="stylesheet" href="css/style.css" />
-  
-  <!-- Leaflet CSS desde CDN confiable -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style_mejorado.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
   <div id="formulario">
     <label>Origen: <input type="text" id="origen" placeholder="Ej: Madrid, España"></label>
-    <label>Destino: <input type="text" id="destino" placeholder="Ej: Barcelona, España"></label>
-    <label>Peso (kg): <input type="number" id="peso" value="40000"></label>
-    <label>Altura (m): <input type="number" id="altura" step="0.1" value="4"></label>
+    <label>Destino: <input type="text" id="destino" placeholder="Ej: Valencia, España"></label>
     <label>Velocidad Máxima (km/h): <input type="number" id="velocidad" value="90"></label>
     <button id="btnCalcular">Calcular Ruta</button>
+    <div id="infoRuta"></div>
   </div>
+
   <div id="map"></div>
 
-  <!-- Leaflet JS desde CDN confiable -->
-  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-  
-  <!-- Tu script personalizado -->
-  <script src="js/app.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="js/app_mejorado.js"></script>
 </body>
 </html>
