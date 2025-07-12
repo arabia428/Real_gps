@@ -1,3 +1,5 @@
+/* css/style.css */
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -10,54 +12,45 @@ body {
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: rgba(255, 255, 255, 0.6); /* Transparente */
+  background: rgba(255, 255, 255, 0.6);
   padding: 15px;
-  border-radius: 12px;
+  border-radius: 10px;
   z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   width: 300px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-label {
+#formulario label {
+  display: block;
+  margin-bottom: 8px;
   font-size: 14px;
-  font-weight: bold;
 }
 
-input, select {
+#formulario input,
+#formulario select,
+#formulario button {
   width: 100%;
-  padding: 6px;
-  font-size: 14px;
-  box-sizing: border-box;
-  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 8px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-button {
-  padding: 10px;
-  font-size: 16px;
-  background-color: #0055cc;
+#formulario button {
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background-color: #003d99;
 }
 
 #infoRuta {
   margin-top: 10px;
   font-weight: bold;
   font-size: 14px;
-  color: #000;
 }
 
 #map {
   flex: 1;
-  height: 100%;
-  z-index: 1;
+  height: 100vh;
 }
