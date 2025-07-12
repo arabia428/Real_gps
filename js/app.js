@@ -1,5 +1,7 @@
 
 let rutaLayer;
+let distanciaTotal = 0;
+let tiempoTotal = 0;
 
 // Inicializar mapa
 const map = L.map('map', {
@@ -10,7 +12,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
-// Obtener ubicación y ponerla como origen automáticamente
+// Detectar ubicación
 navigator.geolocation.getCurrentPosition(pos => {
   const lat = pos.coords.latitude;
   const lon = pos.coords.longitude;
@@ -21,6 +23,7 @@ navigator.geolocation.getCurrentPosition(pos => {
   alert("No se pudo obtener tu ubicación.");
 });
 
+// Convertir texto en coordenadas
 async function geocode(texto) {
   if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(texto.trim())) {
     const [lat, lon] = texto.split(',').map(Number);
@@ -32,13 +35,14 @@ async function geocode(texto) {
   return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
 }
 
+// Calcular ruta con OSRM
 async function calcularRuta() {
   const origenTexto = document.getElementById('origen').value;
   const destinoTexto = document.getElementById('destino').value;
-  const velocidad = parseInt(document.getElementById('velocidad').value);
+  const velocidad = parseInt(document.getElementById('velocidad').value) || 70;
 
   if (!destinoTexto) {
-    alert("Por favor, introduce un destino.");
+    alert("Introduce un destino.");
     return;
   }
 
@@ -51,23 +55,25 @@ async function calcularRuta() {
     const data = await response.json();
 
     if (!data.routes || data.routes.length === 0) {
-      throw new Error("No se pudo calcular la ruta.");
+      throw new Error("No se encontró una ruta.");
     }
 
     const route = data.routes[0];
-    const coords = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+    const coords = route.geometry.coordinates.map(c => [c[1], c[0]]);
 
     if (rutaLayer) map.removeLayer(rutaLayer);
     rutaLayer = L.polyline(coords, { color: "blue", weight: 5 }).addTo(map);
     map.fitBounds(rutaLayer.getBounds());
 
-    const distancia = route.distance / 1000;
-    const tiempo = distancia / velocidad;
+    distanciaTotal = route.distance / 1000;
+    tiempoTotal = distanciaTotal / (velocidad * 0.85); // más realista: 85% del promedio
 
-    alert(`Distancia: ${distancia.toFixed(2)} km\nTiempo estimado: ${tiempo.toFixed(2)} h`);
+    document.getElementById('infoRuta').textContent = 
+      `Distancia: ${distanciaTotal.toFixed(1)} km | Estimado: ${tiempoTotal.toFixed(1)} h`;
+    document.getElementById('infoRuta').style.display = 'block';
   } catch (err) {
     console.error(err);
-    alert("Error al calcular la ruta.");
+    alert("No se pudo calcular la ruta.");
   }
 }
 
