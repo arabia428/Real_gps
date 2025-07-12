@@ -56,7 +56,7 @@ async function calcularRuta() {
 
   const body = {
     coordinates: [coordsInicio.reverse(), coordsFin.reverse()],
-    profile: "driving-car",
+    profile: "driving-hgv",
     format: "geojson",
     ...(altura || anchura || largo || peso ? {
       extra_info: ["weight", "height", "width", "length"],
