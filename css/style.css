@@ -1,4 +1,3 @@
-
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -9,19 +8,20 @@ body {
 
 #formulario {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(10, 40, 80, 0.5);
-  padding: 10px;
-  border-radius: 10px;
+  top: 20px;
+  left: 20px;
+  background: rgba(10, 40, 80, 0.6); /* 60% de transparencia */
+  padding: 15px;
+  border-radius: 15px;
   z-index: 1000;
   color: white;
-  width: 280px;
+  width: 250px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
 
 label, input {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   font-size: 13px;
   width: 100%;
 }
@@ -29,7 +29,8 @@ label, input {
 input {
   padding: 6px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 #btnCalcular {
@@ -38,8 +39,8 @@ input {
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
-  margin-top: 5px;
+  border-radius: 8px;
+  margin-top: 6px;
   cursor: pointer;
   width: 100%;
 }
@@ -48,7 +49,11 @@ input {
   margin-top: 10px;
   font-size: 14px;
   font-weight: bold;
+  background-color: rgba(255,255,255,0.2);
+  padding: 8px;
+  border-radius: 10px;
   display: none;
+  text-align: center;
 }
 #map {
   flex: 1;
